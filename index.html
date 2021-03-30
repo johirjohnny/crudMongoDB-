@@ -16,6 +16,25 @@
         <input type="text" placeholder="quantity" name="quantity">
         <button type="submit">Add product</button>
     </form>
+    <div id="products">
+
+    </div>
+    <script>
+        function loadProducts() {
+            fetch('/products')
+                .then(res => res.json())
+                .then(products => {
+                    console.log(products);
+                    const container = document.getElementById('products');
+                    products.forEach(pd => {
+                        const item = document.createElement('p');
+                        item.innerHTML = `<strong>Name : ${pd.name} </strong>, Price : ${pd.price}`;
+                        container.appendChild(item);
+                    });
+                })
+        }
+        loadProducts();
+    </script>
 </body>
 
 </html>
