@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 
 const password = 'Rdsuu_7xvQjX4gH';
 
@@ -20,21 +21,49 @@ app.get('/', (req, res) => {
 client.connect(err => {
     const productCollection = client.db("organicdb").collection("products");
 
-//read data from database request
+    //read data from database request
 
-    app.get('/products', (req, res) =>{
+    app.get('/products', (req, res) => {
         productCollection.find({})
-        .toArray((err,document) =>  {
-            res.send(document);
-        })
+            .toArray((err, document) => {
+                res.send(document);
+            })
     })
-//send/create data to database
+    //send/create/post data to database
     app.post('/addProduct', (req, res) => {
         const product = req.body;
         productCollection.insertOne(product)
             .then(result => {
                 console.log('data added successfully');
                 res.send('success');
+            })
+    })
+    //select product to update request
+    app.get('/product/:id', (req, res) => {
+        productCollection.find({ _id: ObjectId(req.params.id) })
+            .toArray((err, documents) => {
+                res.send(documents[0]);
+            })
+    })
+
+    //update 
+    app.patch('/update/:id', (req, res) => {
+        productCollection.updateOne({ _id: ObjectId(req.params.id) },
+            {
+                $set: { price: req.body.price, quantity: req.bod.quantity }
+            })
+            .then(result => {
+                console.log(result);
+            })
+
+    })
+
+    //delete
+
+    app.delete('/delete/:id', (req, res) => {
+        productCollection.deleteOne({ _id: ObjectId(req.params.id) })
+            .then(result => {
+                console.log(result);
             })
     })
 
